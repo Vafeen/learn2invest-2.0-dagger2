@@ -6,17 +6,18 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.net.toUri
 import androidx.core.view.GravityCompat
 import androidx.core.view.isVisible
-import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
-import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import ru.surf.learn2invest.domain.utils.launchMAIN
 import ru.surf.learn2invest.presentation.R
 import ru.surf.learn2invest.presentation.databinding.FragmentPortfolioBinding
+import ru.surf.learn2invest.presentation.di.PresentationComponent
 import ru.surf.learn2invest.presentation.ui.components.alert_dialogs.refill_account_dialog.RefillAccountDialog
 import ru.surf.learn2invest.presentation.ui.components.chart.AssetBalanceHistoryFormatter
 import ru.surf.learn2invest.presentation.ui.components.chart.LineChartHelper
@@ -25,19 +26,24 @@ import ru.surf.learn2invest.presentation.utils.DevStrLink
 import ru.surf.learn2invest.presentation.utils.getVersionName
 import ru.surf.learn2invest.presentation.utils.getWithCurrency
 import ru.surf.learn2invest.presentation.utils.setStatusBarColor
+import ru.surf.learn2invest.presentation.utils.viewModelCreator
 import java.util.Locale
 import javax.inject.Inject
 
 /**
  * Фрагмент портфеля в [HostActivity][ru.surf.learn2invest.ui.components.screens.host.HostActivity]
  */
-@AndroidEntryPoint
-internal class PortfolioFragment : BaseResFragment() {
+class PortfolioFragment : BaseResFragment() {
     private lateinit var binding: FragmentPortfolioBinding
     private lateinit var chartHelper: LineChartHelper
-    private val viewModel: PortfolioFragmentViewModel by viewModels()
 
     @Inject
+    lateinit var factory: PortfolioFragmentViewModel.Factory
+
+    private val viewModel: PortfolioFragmentViewModel by viewModelCreator { factory.create() }
+
+    @Inject
+    lateinit var adapterFactory: PortfolioAdapter.Factory
     lateinit var adapter: PortfolioAdapter
 
     // Создание представления фрагмента
@@ -216,6 +222,13 @@ internal class PortfolioFragment : BaseResFragment() {
 
     // Открытие внешней ссылки
     private fun openLink(link: String) {
-        startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(link)))
+        startActivity(Intent(Intent.ACTION_VIEW, link.toUri()))
+    }
+
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        (requireActivity().application as PresentationComponent).inject(this)
+        adapter = adapterFactory.create(requireActivity() as AppCompatActivity)
     }
 }

@@ -7,40 +7,38 @@ import android.os.Bundle
 import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
-import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.isVisible
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.lifecycleScope
-import dagger.hilt.android.AndroidEntryPoint
-import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
-import ru.surf.learn2invest.domain.services.ProfileManager
 import ru.surf.learn2invest.domain.utils.launchIO
 import ru.surf.learn2invest.domain.utils.launchMAIN
 import ru.surf.learn2invest.presentation.R
 import ru.surf.learn2invest.presentation.databinding.ActivitySignUpBinding
+import ru.surf.learn2invest.presentation.di.PresentationComponent
 import ru.surf.learn2invest.presentation.ui.components.screens.sign_in.SignINActivityActions
 import ru.surf.learn2invest.presentation.ui.components.screens.sign_in.SignInActivity
 import ru.surf.learn2invest.presentation.utils.setNavigationBarColor
 import ru.surf.learn2invest.presentation.utils.setStatusBarColor
 import ru.surf.learn2invest.presentation.utils.textListener
+import ru.surf.learn2invest.presentation.utils.viewModelCreator
+import javax.inject.Inject
+
 /**
  * Activity для регистрации нового пользователя. Обрабатывает ввод имени и фамилии пользователя,
  * их валидацию и обновление данных профиля. После успешной регистрации, пользователь будет
  * перенаправлен на экран входа.
  */
-@AndroidEntryPoint
-internal class SignUpActivity : AppCompatActivity() {
+
+class SignUpActivity : AppCompatActivity() {
     private lateinit var binding: ActivitySignUpBinding
 
-    private val viewModel: SignUpActivityViewModel by viewModels()
+    @Inject
+    lateinit var factory: SignUpActivityViewModel.Factory
+    private val viewModel: SignUpActivityViewModel by viewModelCreator { factory.create() }
 
     /**
      * Метод, который вызывается при создании активности. Настроены поля ввода имени и фамилии,
@@ -48,6 +46,7 @@ internal class SignUpActivity : AppCompatActivity() {
      */
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        (applicationContext as PresentationComponent).inject(this)
         // Настройка цветов навигационной панели и статус-бара
         setNavigationBarColor(window, this, R.color.white, R.color.main_background_dark)
         setStatusBarColor(window, this, R.color.accent_background, R.color.accent_background_dark)
@@ -271,6 +270,7 @@ internal class SignUpActivity : AppCompatActivity() {
     /**
      * Показ клавиатуры для текущего элемента.
      */
-    private fun View.showKeyboard() = WindowCompat.getInsetsController(window,this).show(WindowInsetsCompat.Type.ime())
+    private fun View.showKeyboard() =
+        WindowCompat.getInsetsController(window, this).show(WindowInsetsCompat.Type.ime())
 }
 

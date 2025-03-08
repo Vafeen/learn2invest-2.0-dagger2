@@ -1,5 +1,6 @@
 package ru.surf.learn2invest.presentation.ui.components.screens.fragments.asset_overview
 
+import android.content.Context
 import android.content.res.Configuration
 import android.os.Bundle
 import android.util.Log
@@ -8,10 +9,10 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.isVisible
 import androidx.lifecycle.lifecycleScope
-import dagger.hilt.android.AndroidEntryPoint
 import ru.surf.learn2invest.domain.utils.launchMAIN
 import ru.surf.learn2invest.presentation.R
 import ru.surf.learn2invest.presentation.databinding.FragmentAssetOverviewBinding
+import ru.surf.learn2invest.presentation.di.PresentationComponent
 import ru.surf.learn2invest.presentation.ui.components.chart.Last7DaysFormatter
 import ru.surf.learn2invest.presentation.ui.components.chart.LineChartHelper
 import ru.surf.learn2invest.presentation.ui.components.screens.fragments.common.BaseResFragment
@@ -28,8 +29,8 @@ import javax.inject.Inject
  * Фрагмент, отображающий обзор актива, включая график и финансовую информацию.
  * Использует [AssetOverViewFragmentViewModel] для получения данных и отображения их на экране.
  */
-@AndroidEntryPoint
-internal class AssetOverviewFragment : BaseResFragment() {
+
+class AssetOverviewFragment : BaseResFragment() {
     private lateinit var binding: FragmentAssetOverviewBinding
 
     @Inject
@@ -132,5 +133,10 @@ internal class AssetOverviewFragment : BaseResFragment() {
             fragment.arguments = args
             return fragment
         }
+    }
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        (context.applicationContext as PresentationComponent).inject(this)
     }
 }

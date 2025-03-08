@@ -10,33 +10,39 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import android.widget.ArrayAdapter
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
-import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
-import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import ru.surf.learn2invest.domain.utils.launchMAIN
 import ru.surf.learn2invest.presentation.R
 import ru.surf.learn2invest.presentation.databinding.FragmentMarketReviewBinding
+import ru.surf.learn2invest.presentation.di.PresentationComponent
 import ru.surf.learn2invest.presentation.ui.components.screens.fragments.common.BaseResFragment
 import ru.surf.learn2invest.presentation.utils.setStatusBarColor
+import ru.surf.learn2invest.presentation.utils.viewModelCreator
 import javax.inject.Inject
 
 /**
  * Фрагмент обзора рынка в [HostActivity][ru.surf.learn2invest.ui.components.screens.host.HostActivity]
  */
-@AndroidEntryPoint
-internal class MarketReviewFragment : BaseResFragment() {
+
+class MarketReviewFragment : BaseResFragment() {
     private val binding by lazy { FragmentMarketReviewBinding.inflate(layoutInflater) }
-    private val viewModel: MarketReviewFragmentViewModel by viewModels()
+
+    @Inject
+    lateinit var factory: MarketReviewFragmentViewModel.Factory
+    private val viewModel: MarketReviewFragmentViewModel by viewModelCreator { factory.create() }
+
 
     private lateinit var realTimeUpdateJob: Job
 
     @Inject
-    lateinit var adapter: MarketReviewAdapter
+    lateinit var adapterFactory: MarketReviewAdapter.Factory
+    private lateinit var adapter: MarketReviewAdapter
 
     // Создание представления фрагмента
     override fun onCreateView(
@@ -102,7 +108,8 @@ internal class MarketReviewFragment : BaseResFragment() {
                 if (it.isNotEmpty()) {
                     adapter.data = it
                     binding.searchEditText.setAdapter(
-                        ArrayAdapter(this@MarketReviewFragment.requireContext(),
+                        ArrayAdapter(
+                            this@MarketReviewFragment.requireContext(),
                             android.R.layout.simple_expandable_list_item_1,
                             it.map { element -> element.name })
                     )
@@ -258,6 +265,12 @@ internal class MarketReviewFragment : BaseResFragment() {
         val imm = context.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
         imm.hideSoftInputFromWindow(view.windowToken, 0)
         view.clearFocus()
+    }
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        (context.applicationContext as PresentationComponent).inject(this)
+        adapter = adapterFactory.create(requireActivity() as AppCompatActivity)
     }
 
     // Константы для фильтров

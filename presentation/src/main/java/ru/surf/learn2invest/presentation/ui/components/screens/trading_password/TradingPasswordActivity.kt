@@ -4,11 +4,9 @@ import android.os.Bundle
 import android.view.KeyEvent
 import android.view.View
 import android.widget.ImageView
-import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import androidx.lifecycle.lifecycleScope
-import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import ru.surf.learn2invest.domain.utils.hideKeyboard
@@ -16,9 +14,12 @@ import ru.surf.learn2invest.domain.utils.launchMAIN
 import ru.surf.learn2invest.domain.utils.showKeyboard
 import ru.surf.learn2invest.presentation.R
 import ru.surf.learn2invest.presentation.databinding.ActivityTradingPasswordBinding
+import ru.surf.learn2invest.presentation.di.PresentationComponent
 import ru.surf.learn2invest.presentation.utils.setNavigationBarColor
 import ru.surf.learn2invest.presentation.utils.setStatusBarColor
 import ru.surf.learn2invest.presentation.utils.textListener
+import ru.surf.learn2invest.presentation.utils.viewModelCreator
+import javax.inject.Inject
 
 /**
  * Активити торгового пароля для подтверждения сделок.
@@ -31,13 +32,17 @@ import ru.surf.learn2invest.presentation.utils.textListener
  * Определение функции с помощью intent.action и
  * [TradingPasswordActivityActions][ru.surf.learn2invest.presentation.ui.components.screens.trading_password.TradingPasswordActivityActions].
  */
-@AndroidEntryPoint
-internal class TradingPasswordActivity : AppCompatActivity() {
+
+class TradingPasswordActivity : AppCompatActivity() {
     private lateinit var binding: ActivityTradingPasswordBinding
-    private val viewModel: TradingPasswordActivityViewModel by viewModels()
+
+    @Inject
+    lateinit var factory: TradingPasswordActivityViewModel.Factory
+    private val viewModel: TradingPasswordActivityViewModel by viewModelCreator { factory.create() }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        (applicationContext as PresentationComponent).inject(this)
         viewModel.initAction(intentAction = intent.action.toString())
         setStatusBarColor(window, this, R.color.white, R.color.main_background_dark)
         setNavigationBarColor(window, this, R.color.white, R.color.main_background_dark)

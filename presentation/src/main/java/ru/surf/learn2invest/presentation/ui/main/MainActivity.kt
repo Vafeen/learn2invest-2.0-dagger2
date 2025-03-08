@@ -2,28 +2,32 @@ package ru.surf.learn2invest.presentation.ui.main
 
 import android.content.Intent
 import android.os.Bundle
-import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
-import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.delay
 import ru.surf.learn2invest.domain.utils.launchMAIN
 import ru.surf.learn2invest.presentation.R
 import ru.surf.learn2invest.presentation.databinding.ActivityMainBinding
+import ru.surf.learn2invest.presentation.di.PresentationComponent
 import ru.surf.learn2invest.presentation.ui.components.screens.sign_in.SignINActivityActions
 import ru.surf.learn2invest.presentation.ui.components.screens.sign_in.SignInActivity
 import ru.surf.learn2invest.presentation.ui.components.screens.sign_up.SignUpActivity
 import ru.surf.learn2invest.presentation.utils.setNavigationBarColor
 import ru.surf.learn2invest.presentation.utils.setStatusBarColor
+import ru.surf.learn2invest.presentation.utils.viewModelCreator
+import javax.inject.Inject
 
-@AndroidEntryPoint
-internal class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
-    private val viewModel: MainActivityViewModel by viewModels()
+
+    @Inject
+    internal lateinit var viewmodelFactory: MainActivityViewModel.Factory
+    private val viewModel: MainActivityViewModel by viewModelCreator { viewmodelFactory.create() }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        (application as PresentationComponent).inject(this)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
@@ -61,7 +65,8 @@ internal class MainActivity : AppCompatActivity() {
      */
     private fun runAnimatedText(onEnd: () -> Unit) {
         binding.splashTextView.alpha = 0f
-        binding.splashTextView.text = "${getString(R.string.hello)}, ${viewModel.profileFlow.value.firstName}!"
+        binding.splashTextView.text =
+            "${getString(R.string.hello)}, ${viewModel.profileFlow.value.firstName}!"
         viewModel.animateAlpha(
             view = binding.splashTextView,
             duration = 2000,

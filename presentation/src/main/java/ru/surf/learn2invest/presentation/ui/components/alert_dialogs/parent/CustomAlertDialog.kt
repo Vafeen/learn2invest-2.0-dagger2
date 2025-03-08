@@ -13,7 +13,7 @@ import ru.surf.learn2invest.presentation.databinding.SimpleDialogBinding
  * Все диалоги, наследующие этот класс, должны реализовывать `initListeners()`
  * для установки слушателей событий.
  */
-internal abstract class CustomAlertDialog : DialogFragment() {
+abstract class CustomAlertDialog : DialogFragment() {
 
     /**
      * Уникальный тег для идентификации диалогового окна в FragmentManager.

@@ -8,9 +8,12 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
-import dagger.hilt.android.qualifiers.ActivityContext
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
+import dagger.assisted.AssistedInject
 import ru.surf.learn2invest.domain.domain_models.CoinReview
 import ru.surf.learn2invest.domain.services.coin_icon_loader.usecase.LoadCoinIconUseCase
 import ru.surf.learn2invest.presentation.R
@@ -20,16 +23,15 @@ import ru.surf.learn2invest.presentation.utils.getWithCurrency
 import ru.surf.learn2invest.presentation.utils.round
 import java.text.NumberFormat
 import java.util.Locale
-import javax.inject.Inject
 
 /**
  * Adapter для отображения списка обзора рынка в RecyclerView.
  * @param loadCoinIconUseCase use case для загрузки и отображения иконки монеты.
- * @param context контекст для работы с ресурсами и запуском Activity.
+ * @param activity контекст для работы с ресурсами и запуском Activity.
  */
-internal class MarketReviewAdapter @Inject constructor(
+class MarketReviewAdapter @AssistedInject constructor(
     private val loadCoinIconUseCase: LoadCoinIconUseCase,
-    @ActivityContext var context: Context
+    @Assisted private val activity: AppCompatActivity
 ) : RecyclerView.Adapter<MarketReviewAdapter.ViewHolder>() {
 
     /**
@@ -107,6 +109,7 @@ internal class MarketReviewAdapter @Inject constructor(
 
             // Обработка клика по элементу списка
             itemView.setOnClickListener {
+                val context = activity as Context
                 context.startActivity(Intent(context, AssetReviewActivity::class.java).apply {
                     putExtras(Bundle().apply {
                         putString(AssetConstants.ID.key, coin.id)
@@ -116,5 +119,10 @@ internal class MarketReviewAdapter @Inject constructor(
                 })
             }
         }
+    }
+
+    @AssistedFactory
+    interface Factory {
+        fun create(activity: AppCompatActivity): MarketReviewAdapter
     }
 }

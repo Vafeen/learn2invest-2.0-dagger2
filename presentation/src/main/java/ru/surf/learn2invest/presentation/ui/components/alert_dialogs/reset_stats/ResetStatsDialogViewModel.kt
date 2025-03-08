@@ -3,7 +3,6 @@ package ru.surf.learn2invest.presentation.ui.components.alert_dialogs.reset_stat
 import android.content.Context
 import android.widget.Toast
 import androidx.lifecycle.ViewModel
-import dagger.hilt.android.lifecycle.HiltViewModel
 import ru.surf.learn2invest.domain.database.usecase.ClearAppDatabaseUseCase
 import ru.surf.learn2invest.domain.services.ProfileManager
 import ru.surf.learn2invest.domain.utils.withContextIO
@@ -19,8 +18,7 @@ import javax.inject.Inject
  * @param profileManager Менеджер профиля, используемый для управления профилем пользователя.
  * @param clearAppDatabaseUseCase Используется для очистки базы данных приложения.
  */
-@HiltViewModel
-internal class ResetStatsDialogViewModel @Inject constructor(
+class ResetStatsDialogViewModel @Inject constructor(
     private val profileManager: ProfileManager,
     private val clearAppDatabaseUseCase: ClearAppDatabaseUseCase,
 ) : ViewModel() {
@@ -52,5 +50,11 @@ internal class ResetStatsDialogViewModel @Inject constructor(
 
         // Показ уведомления о сбросе статистики
         Toast.makeText(context, context.getString(R.string.stat_reset), Toast.LENGTH_LONG).show()
+    }
+    class Factory @Inject constructor(
+        private val profileManager: ProfileManager,
+        private val clearAppDatabaseUseCase: ClearAppDatabaseUseCase
+    ) {
+        fun create() = ResetStatsDialogViewModel(profileManager, clearAppDatabaseUseCase)
     }
 }

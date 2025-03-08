@@ -37,7 +37,7 @@ import ru.surf.learn2invest.presentation.ui.components.alert_dialogs.common.Lots
  * @property name Название актива
  * @property symbol Символ актива (тикер)
  */
-internal class BuyDialogViewModel @AssistedInject constructor(
+class BuyDialogViewModel @AssistedInject constructor(
     private val profileManager: ProfileManager,
     private val insertTransactionUseCase: InsertTransactionUseCase,
     private val insertAssetInvestUseCase: InsertAssetInvestUseCase,
@@ -81,7 +81,7 @@ internal class BuyDialogViewModel @AssistedInject constructor(
     /**
      * Комбинированный StateFlow, содержащий актуальное состояние покупки
      */
-    val stateFlow = combine(
+    internal val stateFlow = combine(
         lotsFlow,
         _tradingPasswordFlow,
         _coinFlow,

@@ -4,12 +4,10 @@ import android.graphics.Color
 import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.util.Log
-import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.lifecycle.lifecycleScope
-import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -20,8 +18,10 @@ import ru.surf.learn2invest.domain.utils.tapOn
 import ru.surf.learn2invest.domain.utils.withContextIO
 import ru.surf.learn2invest.presentation.R
 import ru.surf.learn2invest.presentation.databinding.ActivitySignInBinding
+import ru.surf.learn2invest.presentation.di.PresentationComponent
 import ru.surf.learn2invest.presentation.utils.setNavigationBarColor
 import ru.surf.learn2invest.presentation.utils.setStatusBarColor
+import ru.surf.learn2invest.presentation.utils.viewModelCreator
 import javax.inject.Inject
 
 /**
@@ -35,17 +35,20 @@ import javax.inject.Inject
  * Определение функция с помощью intent.action и [SignINActivityActions][ru.surf.learn2invest.presentation.ui.components.screens.sign_in.SignINActivityActions]
  */
 
-@AndroidEntryPoint
-internal class SignInActivity : AppCompatActivity() {
+
+class SignInActivity : AppCompatActivity() {
     private lateinit var binding: ActivitySignInBinding
-    private val viewModel: SignInActivityViewModel by viewModels()
+
+    @Inject
+    lateinit var factory: SignInActivityViewModel.Factory
+    private val viewModel: SignInActivityViewModel by viewModelCreator { factory.create() }
     private lateinit var dots: DotsState<Drawable>
 
     @Inject
     lateinit var passwordHasher: PasswordHasher
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
+        (applicationContext as PresentationComponent).inject(this)
         setStatusBarColor(window, this, R.color.accent_background, R.color.accent_background_dark)
         setNavigationBarColor(
             window, this, R.color.accent_background, R.color.accent_background_dark
@@ -208,7 +211,8 @@ internal class SignInActivity : AppCompatActivity() {
                         needReturn = true, truePIN = viewModel.isVerified
                     ) {
                         viewModel.clearPIN()
-                        if (viewModel.isVerified) binding.enterPin.text = getString(R.string.enter_new_pin)
+                        if (viewModel.isVerified) binding.enterPin.text =
+                            getString(R.string.enter_new_pin)
                         viewModel.unblockKeyBoard()
                     }
                 }

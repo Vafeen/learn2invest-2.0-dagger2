@@ -1,6 +1,7 @@
 package ru.surf.learn2invest.presentation.ui.components.alert_dialogs.refill_account_dialog
 
 import android.app.Dialog
+import android.content.Context
 import android.content.res.Configuration
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -9,28 +10,32 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
-import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import com.google.android.material.bottomsheet.BottomSheetDialog
-import dagger.hilt.android.AndroidEntryPoint
 import ru.surf.learn2invest.domain.utils.launchIO
 import ru.surf.learn2invest.domain.utils.launchMAIN
 import ru.surf.learn2invest.domain.utils.tapOn
 import ru.surf.learn2invest.presentation.R
 import ru.surf.learn2invest.presentation.databinding.DialogRefillAccountBinding
+import ru.surf.learn2invest.presentation.di.PresentationComponent
 import ru.surf.learn2invest.presentation.ui.components.alert_dialogs.parent.CustomBottomSheetDialog
 import ru.surf.learn2invest.presentation.utils.getWithCurrency
+import ru.surf.learn2invest.presentation.utils.viewModelCreator
+import javax.inject.Inject
 
 /**
  * Диалоговое окно для пополнения баланса.
  * Отображается в виде BottomSheetDialog и позволяет пользователю вводить сумму пополнения.
  */
-@AndroidEntryPoint
-internal class RefillAccountDialog : CustomBottomSheetDialog() {
+
+class RefillAccountDialog : CustomBottomSheetDialog() {
 
     private lateinit var binding: DialogRefillAccountBinding
     override val dialogTag: String = "refillAccount"
-    private val viewModel: RefillAccountDialogViewModel by viewModels()
+
+    @Inject
+    lateinit var factory: RefillAccountDialogViewModel.Factory
+    private val viewModel: RefillAccountDialogViewModel by viewModelCreator { factory.create() }
 
     /**
      * Инициализация слушателей для обработки пользовательских действий в диалоговом окне.
@@ -166,5 +171,10 @@ internal class RefillAccountDialog : CustomBottomSheetDialog() {
      */
     fun cancel() {
         dismiss()
+    }
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        (context.applicationContext as PresentationComponent).inject(this)
     }
 }

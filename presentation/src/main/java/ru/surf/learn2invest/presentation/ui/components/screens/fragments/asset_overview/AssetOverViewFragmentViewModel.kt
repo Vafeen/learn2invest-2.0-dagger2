@@ -26,7 +26,7 @@ import ru.surf.learn2invest.presentation.utils.priceChangesStr
  * [ViewModel] для фрагмента [AssetOverviewFragment], отвечающий за логику получения и обновления данных актива.
  * Загружает данные для графика, рыночной капитализации и информации о монете.
  */
-internal class AssetOverViewFragmentViewModel @AssistedInject constructor(
+class AssetOverViewFragmentViewModel @AssistedInject constructor(
     private val getCoinHistoryUseCase: GetCoinHistoryUseCase,
     private val getCoinReviewUseCase: GetCoinReviewUseCase,
     getBySymbolAssetInvestUseCase: GetBySymbolAssetInvestUseCase,
@@ -34,7 +34,7 @@ internal class AssetOverViewFragmentViewModel @AssistedInject constructor(
     @Assisted("symbol") val symbol: String,
 ) : ViewModel() {
     private var data = listOf<Entry>()
-    lateinit var chartHelper: LineChartHelper
+    internal lateinit var chartHelper: LineChartHelper
     private var realTimeUpdateJob: Job? = null
     private val _formattedMarketCapFlow = MutableStateFlow(0f)
     private val _formattedPriceFlow = MutableStateFlow(0f)
@@ -44,7 +44,7 @@ internal class AssetOverViewFragmentViewModel @AssistedInject constructor(
     /**
      * Поток, собирающий данные для отображения информации о монете
      */
-    val coinInfoFlow =
+    internal val coinInfoFlow =
         combine(formattedPriceFlow, getBySymbolAssetInvestUseCase.invoke(symbol)) { price, asset ->
             if (asset != null) {
                 CoinInfoState.Data(

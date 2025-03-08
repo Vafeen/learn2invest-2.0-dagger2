@@ -2,7 +2,6 @@ package ru.surf.learn2invest.presentation.ui.components.screens.fragments.asset_
 
 import android.widget.ImageView
 import androidx.lifecycle.ViewModel
-import dagger.hilt.android.lifecycle.HiltViewModel
 import ru.surf.learn2invest.domain.services.coin_icon_loader.CoinIconLoader
 import ru.surf.learn2invest.domain.services.coin_icon_loader.usecase.LoadCoinIconUseCase
 import javax.inject.Inject
@@ -11,8 +10,7 @@ import javax.inject.Inject
  * ViewModel для [AssetReviewActivity], управляющий загрузкой иконки актива.
  * Хранит и управляет запросом на загрузку иконки.
  */
-@HiltViewModel
-internal class AssetReviewActivityViewModel @Inject constructor(private val loadCoinIconUseCase: LoadCoinIconUseCase) :
+class AssetReviewActivityViewModel @Inject constructor(private val loadCoinIconUseCase: LoadCoinIconUseCase) :
     ViewModel() {
 
     private var imageLoaderRequest: CoinIconLoader.Request? = null
@@ -29,5 +27,10 @@ internal class AssetReviewActivityViewModel @Inject constructor(private val load
      */
     fun cancelLoadingImage() {
         imageLoaderRequest?.cancel()
+    }
+    class Factory @Inject constructor(
+        private val loadCoinIconUseCase: LoadCoinIconUseCase
+    ) {
+        fun create() = AssetReviewActivityViewModel(loadCoinIconUseCase)
     }
 }

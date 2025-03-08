@@ -3,12 +3,11 @@ package ru.surf.learn2invest.presentation.ui.components.screens.fragments.asset_
 import android.content.res.ColorStateList
 import android.content.res.Configuration
 import android.os.Bundle
-import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
-import dagger.hilt.android.AndroidEntryPoint
 import ru.surf.learn2invest.presentation.R
 import ru.surf.learn2invest.presentation.databinding.ActivityAssetReviewBinding
+import ru.surf.learn2invest.presentation.di.PresentationComponent
 import ru.surf.learn2invest.presentation.ui.components.alert_dialogs.buy_dialog.BuyDialog
 import ru.surf.learn2invest.presentation.ui.components.alert_dialogs.sell_dialog.SellDialog
 import ru.surf.learn2invest.presentation.ui.components.screens.fragments.asset_overview.AssetOverviewFragment
@@ -16,15 +15,19 @@ import ru.surf.learn2invest.presentation.ui.components.screens.fragments.subhist
 import ru.surf.learn2invest.presentation.utils.AssetConstants
 import ru.surf.learn2invest.presentation.utils.setNavigationBarColor
 import ru.surf.learn2invest.presentation.utils.setStatusBarColor
+import ru.surf.learn2invest.presentation.utils.viewModelCreator
+import javax.inject.Inject
 
 /**
  * Экран обзора актива, позволяющий пользователю просматривать подробности актива,
  * его историю и совершать действия с активом (покупка/продажа).
  */
-@AndroidEntryPoint
-internal class AssetReviewActivity : AppCompatActivity() {
+class AssetReviewActivity : AppCompatActivity() {
     private lateinit var binding: ActivityAssetReviewBinding
-    private val viewModel: AssetReviewActivityViewModel by viewModels()
+
+    @Inject
+    lateinit var factory: AssetReviewActivityViewModel.Factory
+    private val viewModel: AssetReviewActivityViewModel by viewModelCreator { factory.create() }
     private var isOverviewSelected = true
 
     /**
@@ -34,11 +37,10 @@ internal class AssetReviewActivity : AppCompatActivity() {
      */
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
+        (applicationContext as PresentationComponent).inject(this)
         // Установка цветов для статус бара и навигационной панели
         setStatusBarColor(window, this, R.color.white, R.color.main_background_dark)
         setNavigationBarColor(window, this, R.color.white, R.color.main_background_dark)
-
         // Инициализация привязки и привязка UI
         binding = ActivityAssetReviewBinding.inflate(layoutInflater)
         setContentView(binding.root)

@@ -3,7 +3,6 @@ package ru.surf.learn2invest.presentation.ui.components.screens.fragments.portfo
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.github.mikephil.charting.data.Entry
-import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -48,8 +47,7 @@ import javax.inject.Inject
  * @param getCoinReviewUseCase UseCase для получения данных о текущей цене актива.
  * @param getBySymbolAssetInvestUseCase UseCase для получения информации о конкретном активе по его символу.
  */
-@HiltViewModel
-internal class PortfolioFragmentViewModel @Inject constructor(
+class PortfolioFragmentViewModel @Inject constructor(
     private val profileManager: ProfileManager,
     private val getAllAssetInvestUseCase: GetAllAssetInvestUseCase,
     private val getAllAssetBalanceHistoryUseCase: GetAllAssetBalanceHistoryUseCase,
@@ -237,5 +235,26 @@ internal class PortfolioFragmentViewModel @Inject constructor(
         } else {
             _portfolioChangePercentage.value = 0f
         }
+    }
+
+    class Factory @Inject constructor(
+        private val profileManager: ProfileManager,
+        private val getAllAssetInvestUseCase: GetAllAssetInvestUseCase,
+        private val getAllAssetBalanceHistoryUseCase: GetAllAssetBalanceHistoryUseCase,
+        private val insertAssetBalanceHistoryUseCase: InsertAssetBalanceHistoryUseCase,
+        private val insertByLimitAssetBalanceHistoryUseCase: InsertByLimitAssetBalanceHistoryUseCase,
+        private val getCoinReviewUseCase: GetCoinReviewUseCase,
+        private val getBySymbolAssetInvestUseCase: GetBySymbolAssetInvestUseCase,
+    ) {
+        fun create() = PortfolioFragmentViewModel(
+            profileManager,
+            getAllAssetInvestUseCase,
+            getAllAssetBalanceHistoryUseCase,
+            insertAssetBalanceHistoryUseCase,
+            insertByLimitAssetBalanceHistoryUseCase,
+            getCoinReviewUseCase,
+            getBySymbolAssetInvestUseCase
+        )
+
     }
 }
