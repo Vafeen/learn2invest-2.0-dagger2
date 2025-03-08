@@ -4,7 +4,6 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupWithNavController
-import dagger.hilt.android.AndroidEntryPoint
 import ru.surf.learn2invest.presentation.R
 import ru.surf.learn2invest.presentation.databinding.ActivityHostBinding
 import ru.surf.learn2invest.presentation.utils.setNavigationBarColor
@@ -14,7 +13,6 @@ import ru.surf.learn2invest.presentation.utils.setNavigationBarColor
  * Эта активность управляет отображением основного контента и навигацией в приложении.
  * Она также настраивает нижнюю навигационную панель (BottomBar) и связывает ее с контроллером навигации.
  */
-@AndroidEntryPoint
 internal class HostActivity : AppCompatActivity() {
 
     // Переменная для привязки элементов UI

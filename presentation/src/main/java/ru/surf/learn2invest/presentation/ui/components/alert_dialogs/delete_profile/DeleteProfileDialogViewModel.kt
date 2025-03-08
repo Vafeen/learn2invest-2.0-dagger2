@@ -3,7 +3,6 @@ package ru.surf.learn2invest.presentation.ui.components.alert_dialogs.delete_pro
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModel
-import dagger.hilt.android.lifecycle.HiltViewModel
 import ru.surf.learn2invest.domain.database.usecase.ClearAppDatabaseUseCase
 import ru.surf.learn2invest.domain.utils.withContextIO
 import ru.surf.learn2invest.presentation.ui.main.MainActivity
@@ -14,8 +13,7 @@ import javax.inject.Inject
  *
  * @property clearAppDatabaseUseCase UseCase для очистки базы данных приложения.
  */
-@HiltViewModel
-internal class DeleteProfileDialogViewModel @Inject constructor(
+class DeleteProfileDialogViewModel @Inject constructor(
     private val clearAppDatabaseUseCase: ClearAppDatabaseUseCase,
 ) : ViewModel() {
 
@@ -37,5 +35,11 @@ internal class DeleteProfileDialogViewModel @Inject constructor(
         activity.startActivity(
             Intent(activity, MainActivity::class.java)
         )
+    }
+
+    class Factory @Inject constructor(
+        private val clearAppDatabaseUseCase: ClearAppDatabaseUseCase
+    ) {
+        fun create() = DeleteProfileDialogViewModel(clearAppDatabaseUseCase)
     }
 }

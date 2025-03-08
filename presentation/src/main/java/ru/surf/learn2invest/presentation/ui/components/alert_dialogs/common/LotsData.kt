@@ -11,7 +11,7 @@ package ru.surf.learn2invest.presentation.ui.components.alert_dialogs.common
  * @param isUpdateTVNeeded Флаг, указывающий, требуется ли обновление текстового поля с количеством лотов.
  * По умолчанию установлено значение `true`.
  */
-internal data class LotsData(
+data class LotsData(
     val lots: Int,
     val isUpdateTVNeeded: Boolean = true,
 )

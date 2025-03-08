@@ -19,7 +19,7 @@ import ru.surf.learn2invest.domain.domain_models.Transaction
  * @param symbol Символ монеты, для которой нужно получить историю сделок. Этот параметр
  *        используется для фильтрации данных, получаемых через use case.
  */
-internal class SubHistoryFragmentViewModel @AssistedInject constructor(
+class SubHistoryFragmentViewModel @AssistedInject constructor(
     /**
      * Используется для фильтрации и получения списка транзакций, которые относятся только к указанному символу монеты.
      * Это сервис или use case, который взаимодействует с репозиторием данных для получения информации.

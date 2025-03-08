@@ -11,12 +11,12 @@ import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
 import androidx.lifecycle.lifecycleScope
 import com.google.android.material.bottomsheet.BottomSheetDialog
-import dagger.hilt.android.AndroidEntryPoint
 import ru.surf.learn2invest.domain.utils.launchIO
 import ru.surf.learn2invest.domain.utils.launchMAIN
 import ru.surf.learn2invest.domain.utils.withContextMAIN
 import ru.surf.learn2invest.presentation.R
 import ru.surf.learn2invest.presentation.databinding.DialogSellBinding
+import ru.surf.learn2invest.presentation.di.PresentationComponent
 import ru.surf.learn2invest.presentation.ui.components.alert_dialogs.parent.CustomBottomSheetDialog
 import ru.surf.learn2invest.presentation.utils.NoArgException
 import ru.surf.learn2invest.presentation.utils.getFloatFromStringWithCurrency
@@ -32,8 +32,8 @@ import javax.inject.Inject
  * Пользователь может выбрать количество лотов для продажи, ввести торговый пароль (если требуется),
  * а также увидеть результат продажи, включая цену и доступное количество.
  */
-@AndroidEntryPoint
-internal class SellDialog : CustomBottomSheetDialog() {
+
+class SellDialog : CustomBottomSheetDialog() {
 
     /**
      * Тег диалога для идентификации.
@@ -217,6 +217,7 @@ internal class SellDialog : CustomBottomSheetDialog() {
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
+        (context.applicationContext as PresentationComponent).inject(this)
         lifecycleScope.launchIO {
             viewModel.setAssetIfInDB()
         }.invokeOnCompletion {

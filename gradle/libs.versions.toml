@@ -2,6 +2,8 @@
 accompanistPermissions = "0.31.1-alpha" # Accompanist Permissions
 agp = "8.8.0" # Android Gradle Plugin
 biometric = "1.1.0" # AndroidX Biometric
+daggerCompiler = "2.55"
+dagger = "2.55"
 hiltAndroid = "2.52" # Hilt Android
 kotlin = "1.9.24" # Kotlin
 coreKtx = "1.15.0" # AndroidX Core KTX
@@ -33,6 +35,8 @@ espressoCore = "3.6.1" # Espresso Core
 accompanist-permissions = { module = "com.google.accompanist:accompanist-permissions", version.ref = "accompanistPermissions" } # Accompanist Permissions
 androidx-biometric = { module = "androidx.biometric:biometric", version.ref = "biometric" } # AndroidX Biometric
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" } # AndroidX Core KTX
+dagger = { module = "com.google.dagger:dagger", version.ref = "dagger" }
+dagger-compiler = { module = "com.google.dagger:dagger-compiler", version.ref = "daggerCompiler" }
 hilt-android = { module = "com.google.dagger:hilt-android", version.ref = "hiltAndroid" } # Hilt Android
 hilt-android-compiler = { module = "com.google.dagger:hilt-android-compiler", version.ref = "hiltAndroid" } # Hilt Android Compiler
 androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" } # AndroidX AppCompat

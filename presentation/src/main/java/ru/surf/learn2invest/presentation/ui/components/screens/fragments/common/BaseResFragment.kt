@@ -11,7 +11,7 @@ import androidx.fragment.app.Fragment
  * в дочерних фрагментах. Этот фрагмент используется в качестве родительского для других фрагментов,
  * которые нуждаются в доступе к ресурсам.
  */
-internal open class BaseResFragment : Fragment() {
+open class BaseResFragment : Fragment() {
 
     /**
      * Возвращает цвет по ресурсу.

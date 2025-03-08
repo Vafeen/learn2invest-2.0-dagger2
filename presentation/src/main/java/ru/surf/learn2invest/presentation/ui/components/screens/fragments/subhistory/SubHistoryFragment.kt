@@ -1,17 +1,19 @@
 package ru.surf.learn2invest.presentation.ui.components.screens.fragments.subhistory
 
+import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
-import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import ru.surf.learn2invest.presentation.databinding.FragmentAssetHistoryBinding
+import ru.surf.learn2invest.presentation.di.PresentationComponent
 import ru.surf.learn2invest.presentation.utils.AssetConstants
 import ru.surf.learn2invest.presentation.utils.viewModelCreator
 import javax.inject.Inject
@@ -19,8 +21,7 @@ import javax.inject.Inject
 /**
  * Фрагмент для отображения истории сделок с конкретной монетой в активе.
  */
-@AndroidEntryPoint
-internal class SubHistoryFragment : Fragment() {
+class SubHistoryFragment : Fragment() {
     private lateinit var binding: FragmentAssetHistoryBinding
 
     @Inject
@@ -34,6 +35,7 @@ internal class SubHistoryFragment : Fragment() {
     }
 
     @Inject
+    lateinit var adapterFactory: SubHistoryAdapter.Factory
     lateinit var adapter: SubHistoryAdapter
 
     /**
@@ -65,6 +67,12 @@ internal class SubHistoryFragment : Fragment() {
                 }
             }
         }
+    }
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        (context.applicationContext as PresentationComponent).inject(this)
+        adapter = adapterFactory.create(requireActivity() as AppCompatActivity)
     }
 
     /**

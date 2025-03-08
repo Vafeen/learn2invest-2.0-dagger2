@@ -43,7 +43,7 @@ import ru.surf.learn2invest.presentation.ui.components.alert_dialogs.common.Lots
  * @param name Название актива.
  * @param symbol Символ актива.
  */
-internal class SellDialogViewModel @AssistedInject constructor(
+class SellDialogViewModel @AssistedInject constructor(
     private val profileManager: ProfileManager,
     private val insertTransactionUseCase: InsertTransactionUseCase,
     private val insertAssetInvestUseCase: InsertAssetInvestUseCase,
@@ -88,8 +88,12 @@ internal class SellDialogViewModel @AssistedInject constructor(
     /**
      * Состояние диалога продажи, которое объединяет информацию о лотах, торговом пароле и активе.
      */
-    val stateFlow =
-        combine(_lotsFlow.asStateFlow(), _tradingPasswordFlow.asStateFlow(), _coinFlow) { lotsData, tradingPassword, asset ->
+    internal val stateFlow =
+        combine(
+            _lotsFlow.asStateFlow(),
+            _tradingPasswordFlow.asStateFlow(),
+            _coinFlow
+        ) { lotsData, tradingPassword, asset ->
             SellDialogState(asset, lotsData, tradingPassword)
         }
 

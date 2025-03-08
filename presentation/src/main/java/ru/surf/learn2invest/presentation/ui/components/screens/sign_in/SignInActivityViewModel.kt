@@ -4,7 +4,6 @@ import android.app.Activity
 import android.content.Intent
 import android.widget.ImageView
 import androidx.lifecycle.ViewModel
-import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -16,6 +15,7 @@ import ru.surf.learn2invest.domain.domain_models.Profile
 import ru.surf.learn2invest.domain.services.ProfileManager
 import ru.surf.learn2invest.presentation.ui.components.screens.host.HostActivity
 import javax.inject.Inject
+
 /**
  * ViewModel для экрана входа (SignInActivity), обрабатывающий аутентификацию с использованием PIN-кода и отпечатка пальца.
  * Обрабатывает логику аутентификации, блокировку/разблокировку клавиатуры и анимацию точек в процессе ввода PIN-кода.
@@ -25,8 +25,7 @@ import javax.inject.Inject
  * @param verifyPINUseCase Кейс для верификации PIN-кода.
  * @param animateDotsUseCase Кейс для анимации точек PIN-кода.
  */
-@HiltViewModel
-internal class SignInActivityViewModel @Inject constructor(
+class SignInActivityViewModel(
     private val profileManager: ProfileManager,
     var fingerprintAuthenticator: FingerprintAuthenticator,
     private val verifyPINUseCase: VerifyPINUseCase,
@@ -71,7 +70,7 @@ internal class SignInActivityViewModel @Inject constructor(
             four = DotState.NULL,
         )
     )
-    val dotsFlow = _dotsFlow.asStateFlow()
+    internal val dotsFlow = _dotsFlow.asStateFlow()
 
     /**
      * Проверка правильности введенного PIN-кода.
@@ -191,4 +190,18 @@ internal class SignInActivityViewModel @Inject constructor(
      */
     private fun fULLOrNULL(length: Int) =
         if (pinFlow.value.length >= length) DotState.FULL else DotState.NULL
+
+    class Factory @Inject constructor(
+        private val profileManager: ProfileManager,
+        var fingerprintAuthenticator: FingerprintAuthenticator,
+        private val verifyPINUseCase: VerifyPINUseCase,
+        private val animateDotsUseCase: AnimateDotsUseCase,
+    ) {
+        fun create() = SignInActivityViewModel(
+            profileManager,
+            fingerprintAuthenticator,
+            verifyPINUseCase,
+            animateDotsUseCase
+        )
+    }
 }

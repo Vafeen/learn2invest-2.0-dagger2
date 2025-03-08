@@ -6,7 +6,6 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import dagger.hilt.android.lifecycle.HiltViewModel
 import ru.surf.learn2invest.domain.cryptography.FingerprintAuthenticator
 import ru.surf.learn2invest.domain.database.usecase.ClearAppDatabaseUseCase
 import ru.surf.learn2invest.domain.domain_models.Profile
@@ -30,8 +29,7 @@ import javax.inject.Inject
  * @param clearAppDatabaseUseCase UseCase для очистки базы данных приложения.
  * @param fingerprintAuthenticator Аутентификатор для работы с биометрией пользователя.
  */
-@HiltViewModel
-internal class ProfileFragmentViewModel @Inject constructor(
+class ProfileFragmentViewModel @Inject constructor(
     private val profileManager: ProfileManager,
     private val clearAppDatabaseUseCase: ClearAppDatabaseUseCase,
     private val fingerprintAuthenticator: FingerprintAuthenticator,
@@ -147,4 +145,16 @@ internal class ProfileFragmentViewModel @Inject constructor(
      */
     fun isBiometricAvailable(activity: AppCompatActivity): Boolean =
         fingerprintAuthenticator.isBiometricAvailable(activity)
+
+    class Factory @Inject constructor(
+        private val profileManager: ProfileManager,
+        private val clearAppDatabaseUseCase: ClearAppDatabaseUseCase,
+        private val fingerprintAuthenticator: FingerprintAuthenticator,
+    ) {
+        fun create() = ProfileFragmentViewModel(
+            profileManager,
+            clearAppDatabaseUseCase,
+            fingerprintAuthenticator
+        )
+    }
 }

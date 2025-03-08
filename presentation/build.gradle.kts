@@ -3,7 +3,6 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.org.jetbrains.kotlin.kapt)
     id("kotlin-parcelize")
-    alias(libs.plugins.hilt.android)
 }
 
 android {
@@ -56,7 +55,7 @@ dependencies {
     implementation(libs.accompanist.permissions)
     // for graphics
     implementation(libs.mpandroidchart)
-    // DI
-    implementation(libs.hilt.android)
-    kapt(libs.hilt.android.compiler)
+    // Dagger2
+    implementation(libs.dagger)
+    kapt(libs.dagger.compiler)
 }

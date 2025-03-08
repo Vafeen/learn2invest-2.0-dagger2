@@ -7,25 +7,27 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
-import dagger.hilt.android.qualifiers.ActivityContext
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
+import dagger.assisted.AssistedInject
 import ru.surf.learn2invest.domain.TransactionsType
 import ru.surf.learn2invest.domain.domain_models.Transaction
 import ru.surf.learn2invest.domain.services.coin_icon_loader.usecase.LoadCoinIconUseCase
 import ru.surf.learn2invest.presentation.R
 import ru.surf.learn2invest.presentation.ui.components.screens.fragments.common.TransactionAdapterDiffCallback
 import ru.surf.learn2invest.presentation.utils.getWithCurrency
-import javax.inject.Inject
 
 /**
  * Адаптер для отображения истории сделок с криптовалютой в RecyclerView.
  * В этом адаптере используются такие данные, как имя монеты, ее символ,
  * цена сделки и количество.
  */
-internal class SubHistoryAdapter @Inject constructor(
+class SubHistoryAdapter @AssistedInject constructor(
     private val loadCoinIconUseCase: LoadCoinIconUseCase, // Используется для загрузки иконки монеты
-    @ActivityContext var context: Context, // Контекст активности для получения цветов и других ресурсов
+    @Assisted private val activity: AppCompatActivity// Контекст активности для получения цветов и других ресурсов
 ) : RecyclerView.Adapter<SubHistoryAdapter.ViewHolder>() {
 
     // Список данных о транзакциях
@@ -75,7 +77,7 @@ internal class SubHistoryAdapter @Inject constructor(
                 coinTopNumericInfo.text = "- ${data[position].dealPrice.getWithCurrency()}"
                 coinTopNumericInfo.setTextColor(
                     coinBottomNumericInfo.context.getColor(
-                        if (context.resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK == Configuration.UI_MODE_NIGHT_YES) {
+                        if ((activity as Context).resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK == Configuration.UI_MODE_NIGHT_YES) {
                             R.color.white
                         } else {
                             R.color.black
@@ -86,5 +88,10 @@ internal class SubHistoryAdapter @Inject constructor(
             coinBottomNumericInfo.text = "${data[position].coinPrice}$"
             loadCoinIconUseCase.invoke(coinIcon, data[position].symbol) // Загрузка иконки монеты
         }
+    }
+
+    @AssistedFactory
+    interface Factory {
+        fun create(activity: AppCompatActivity): SubHistoryAdapter
     }
 }

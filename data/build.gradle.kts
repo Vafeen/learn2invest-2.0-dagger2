@@ -2,7 +2,6 @@ plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.org.jetbrains.kotlin.kapt)
-    alias(libs.plugins.hilt.android)
 }
 
 android {
@@ -47,15 +46,12 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
-    // hilt
-    implementation(libs.hilt.android)
-    kapt(libs.hilt.android.compiler)
     // room
     implementation(libs.androidx.room.runtime)
     implementation(libs.androidx.room.ktx)
     kapt(libs.androidx.room.compiler)
     // retrofit
-    implementation(libs.retrofit)
+    api(libs.retrofit)
     implementation(libs.converter.gson)
     implementation(libs.gson)
     implementation(libs.logging.interceptor)
@@ -63,5 +59,8 @@ dependencies {
     implementation(libs.androidx.biometric)
     //coil
     implementation(libs.coil.svg)
-    implementation(libs.coil)
+    api(libs.coil)
+    // Dagger2
+    implementation(libs.dagger)
+    kapt(libs.dagger.compiler)
 }

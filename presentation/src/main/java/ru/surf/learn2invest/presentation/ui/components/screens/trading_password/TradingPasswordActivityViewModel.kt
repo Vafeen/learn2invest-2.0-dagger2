@@ -1,11 +1,10 @@
 package ru.surf.learn2invest.presentation.ui.components.screens.trading_password
 
+import android.app.Application
 import android.content.Context
 import androidx.annotation.DrawableRes
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModel
-import dagger.hilt.android.lifecycle.HiltViewModel
-import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -28,12 +27,11 @@ import javax.inject.Inject
  * @param verifyTradingPasswordUseCase Используемый для проверки торгового пароля.
  * @param context Контекст приложения.
  */
-@HiltViewModel
-internal class TradingPasswordActivityViewModel @Inject constructor(
+class TradingPasswordActivityViewModel(
     private val profileManager: ProfileManager,
     private val getHashedPasswordUseCase: GetHashedPasswordUseCase,
     private val verifyTradingPasswordUseCase: VerifyTradingPasswordUseCase,
-    @ApplicationContext val context: Context
+    private val application: Application
 ) : ViewModel() {
 
     // Поток данных профиля пользователя.
@@ -45,7 +43,7 @@ internal class TradingPasswordActivityViewModel @Inject constructor(
     private val _confirmPasswordFlow = MutableStateFlow("")
 
     // Объединенный поток состояния правил на основе введенных паролей.
-    val ruleStateFlow = combine(
+    internal val ruleStateFlow = combine(
         _lastPasswordFlow,
         _tradingPasswordFlow,
         _confirmPasswordFlow
@@ -77,12 +75,12 @@ internal class TradingPasswordActivityViewModel @Inject constructor(
     )
 
     // Поток состояния кнопки действия на основе состояния правил.
-    val mainButtonActionFlow = ruleStateFlow.map { ruleState ->
+    internal val mainButtonActionFlow = ruleStateFlow.map { ruleState ->
         val action = actionFlow.value
         if (action != null) {
             when (action) {
                 TradingPasswordActivityActions.CreateTradingPassword -> MainActionButtonState(
-                    text = context.getString(TradingPasswordActivityActions.ChangeTradingPassword.resName),
+                    text = (application as Context).getString(TradingPasswordActivityActions.ChangeTradingPassword.resName),
                     isVisible = ruleState[RuleStateKey.RULE_1] == true &&
                             ruleState[RuleStateKey.RULE_2] == true &&
                             ruleState[RuleStateKey.RULE_3] == true &&
@@ -90,7 +88,7 @@ internal class TradingPasswordActivityViewModel @Inject constructor(
                 )
 
                 TradingPasswordActivityActions.ChangeTradingPassword -> MainActionButtonState(
-                    text = context.getString(TradingPasswordActivityActions.ChangeTradingPassword.resName),
+                    text = (application as Context).getString(TradingPasswordActivityActions.ChangeTradingPassword.resName),
                     isVisible = ruleState[RuleStateKey.RULE_1] == true &&
                             ruleState[RuleStateKey.RULE_2] == true &&
                             ruleState[RuleStateKey.RULE_3] == true &&
@@ -99,7 +97,7 @@ internal class TradingPasswordActivityViewModel @Inject constructor(
                 )
 
                 TradingPasswordActivityActions.RemoveTradingPassword -> MainActionButtonState(
-                    text = context.getString(TradingPasswordActivityActions.RemoveTradingPassword.resName),
+                    text = (application as Context).getString(TradingPasswordActivityActions.RemoveTradingPassword.resName),
                     isVisible = ruleState[RuleStateKey.RULE_4] == true
                 )
             }
@@ -109,7 +107,7 @@ internal class TradingPasswordActivityViewModel @Inject constructor(
     private val _actionFlow = MutableStateFlow<TradingPasswordActivityActions?>(null)
 
     // Поток действий активности.
-    val actionFlow: StateFlow<TradingPasswordActivityActions?> = _actionFlow.asStateFlow()
+    internal val actionFlow: StateFlow<TradingPasswordActivityActions?> = _actionFlow.asStateFlow()
 
     /**
      * Обновляет торговый пароль в профиле пользователя.
@@ -171,7 +169,8 @@ internal class TradingPasswordActivityViewModel @Inject constructor(
      * @param res Идентификатор ресурса drawable.
      * @return Drawable ресурс.
      */
-    fun getDrawableRes(@DrawableRes res: Int) = ContextCompat.getDrawable(context, res)
+    fun getDrawableRes(@DrawableRes res: Int) =
+        ContextCompat.getDrawable((application as Context), res)
 
     /**
      * Инициализирует действие в зависимости от переданного intentAction.
@@ -194,5 +193,19 @@ internal class TradingPasswordActivityViewModel @Inject constructor(
 
             else -> throw Exception("action is not defined or not is TradingPasswordActivityActions")
         }
+    }
+
+    class Factory @Inject constructor(
+        private val profileManager: ProfileManager,
+        private val getHashedPasswordUseCase: GetHashedPasswordUseCase,
+        private val verifyTradingPasswordUseCase: VerifyTradingPasswordUseCase,
+        private val application: Application
+    ) {
+        fun create() = TradingPasswordActivityViewModel(
+            profileManager,
+            getHashedPasswordUseCase,
+            verifyTradingPasswordUseCase,
+            application
+        )
     }
 }

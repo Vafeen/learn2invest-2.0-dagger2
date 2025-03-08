@@ -8,9 +8,12 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
-import dagger.hilt.android.qualifiers.ActivityContext
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
+import dagger.assisted.AssistedInject
 import ru.surf.learn2invest.domain.domain_models.AssetInvest
 import ru.surf.learn2invest.domain.services.coin_icon_loader.usecase.LoadCoinIconUseCase
 import ru.surf.learn2invest.presentation.R
@@ -20,18 +23,17 @@ import ru.surf.learn2invest.presentation.utils.AssetConstants
 import ru.surf.learn2invest.presentation.utils.getWithCurrency
 import ru.surf.learn2invest.presentation.utils.getWithPCS
 import ru.surf.learn2invest.presentation.utils.round
-import javax.inject.Inject
 
 
 /**
  * Адаптер для отображения портфеля активов.
  *
  * @param loadCoinIconUseCase Используется для загрузки иконки монеты.
- * @param context Контекст, необходим для старта активностей.
+ * @param activity Контекст, необходим для старта активностей.
  */
-internal class PortfolioAdapter @Inject constructor(
+class PortfolioAdapter @AssistedInject constructor(
     private val loadCoinIconUseCase: LoadCoinIconUseCase,
-    @ActivityContext var context: Context,
+    @Assisted private val activity: AppCompatActivity
 ) : RecyclerView.Adapter<PortfolioAdapter.PortfolioViewHolder>() {
 
     /**
@@ -39,14 +41,13 @@ internal class PortfolioAdapter @Inject constructor(
      * Когда список изменяется, рассчитываются различия и обновляются данные в адаптере.
      */
     var assets: List<AssetInvest> = emptyList()
-        set(value) {
+        set(value) = synchronized(field) {
             val oldList = field
             val diffCallback = PortfolioAdapterDiffCallback(oldList, value)
             val diffs = DiffUtil.calculateDiff(diffCallback)
             field = value
             diffs.dispatchUpdatesTo(this) // Обновление адаптера с учетом изменений в списке
         }
-
     /**
      * Словарь с изменениями цен для каждого актива.
      * Когда изменения цен обновляются, рассчитываются различия и обновляются данные в адаптере.
@@ -82,6 +83,7 @@ internal class PortfolioAdapter @Inject constructor(
         val asset = assets[position] // Получаем актив по позиции
         holder.bind(asset, priceChanges[asset.symbol] ?: 0f) // Привязываем данные к элементу
         holder.itemView.setOnClickListener {
+            val context = activity as Context
             // При клике на элемент открываем экран с подробностями актива
             context.startActivity(Intent(context, AssetReviewActivity::class.java).apply {
                 putExtras(Bundle().apply {
@@ -111,7 +113,8 @@ internal class PortfolioAdapter @Inject constructor(
         private val coinName: TextView = itemView.findViewById(R.id.coin_name)
         private val coinQuantity: TextView = itemView.findViewById(R.id.coin_symbol)
         private val coinTopNumericInfo: TextView = itemView.findViewById(R.id.coin_top_numeric_info)
-        private val coinBottomNumericInfo: TextView = itemView.findViewById(R.id.coin_bottom_numeric_info)
+        private val coinBottomNumericInfo: TextView =
+            itemView.findViewById(R.id.coin_bottom_numeric_info)
 
         /**
          * Привязывает данные активов к UI-элементам.
@@ -121,9 +124,11 @@ internal class PortfolioAdapter @Inject constructor(
          */
         fun bind(asset: AssetInvest, priceChange: Float) {
             coinName.text = asset.name // Устанавливаем название актива
-            coinQuantity.text = "${asset.amount}".getWithPCS(context) // Устанавливаем количество актива
+            coinQuantity.text =
+                "${asset.amount}".getWithPCS(activity as Context) // Устанавливаем количество актива
             coinTopNumericInfo.text = priceChange.getWithCurrency() // Устанавливаем цену
-            val priceChangePercent = ((priceChange - asset.coinPrice) / asset.coinPrice) * 100 // Рассчитываем изменение цены в процентах
+            val priceChangePercent =
+                ((priceChange - asset.coinPrice) / asset.coinPrice) * 100 // Рассчитываем изменение цены в процентах
             val roundedPercent = priceChangePercent.round() // Округляем процентное изменение
             coinBottomNumericInfo.setTextColor(
                 when {
@@ -145,5 +150,10 @@ internal class PortfolioAdapter @Inject constructor(
             )
             loadCoinIconUseCase.invoke(coinIcon, asset.symbol) // Загружаем иконку актива
         }
+    }
+
+    @AssistedFactory
+    interface Factory {
+        fun create(activity: AppCompatActivity): PortfolioAdapter
     }
 }

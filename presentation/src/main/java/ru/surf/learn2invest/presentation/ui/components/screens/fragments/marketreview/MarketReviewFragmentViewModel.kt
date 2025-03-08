@@ -3,7 +3,6 @@ package ru.surf.learn2invest.presentation.ui.components.screens.fragments.market
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.recyclerview.widget.RecyclerView.NO_POSITION
-import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -36,8 +35,7 @@ import javax.inject.Inject
  * @property getCoinReviewUseCase Используется для получения подробной информации о конкретной монете.
  * @property clearSearchedCoinUseCase Используется для очистки списка поисковых запросов.
  */
-@HiltViewModel
-internal class MarketReviewFragmentViewModel @Inject constructor(
+class MarketReviewFragmentViewModel @Inject constructor(
     private val getMarkerReviewUseCase: GetMarketReviewUseCase,
     private val insertSearchedCoinUseCase: InsertSearchedCoinUseCase,
     private val getAllSearchedCoinUseCase: GetAllSearchedCoinUseCase,
@@ -260,5 +258,21 @@ internal class MarketReviewFragmentViewModel @Inject constructor(
                 listOf()
             }
         }
+    }
+
+    class Factory @Inject constructor(
+        private val getMarketReviewUseCase: GetMarketReviewUseCase,
+        private val insertSearchedCoinUseCase: InsertSearchedCoinUseCase,
+        private val getAllSearchedCoinUseCase: GetAllSearchedCoinUseCase,
+        private val getCoinReviewUseCase: GetCoinReviewUseCase,
+        private val clearSearchedCoinUseCase: ClearSearchedCoinUseCase,
+    ) {
+        fun create() = MarketReviewFragmentViewModel(
+            getMarketReviewUseCase,
+            insertSearchedCoinUseCase,
+            getAllSearchedCoinUseCase,
+            getCoinReviewUseCase,
+            clearSearchedCoinUseCase
+        )
     }
 }

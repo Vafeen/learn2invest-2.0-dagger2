@@ -1,7 +1,6 @@
 package ru.surf.learn2invest.presentation.ui.components.screens.sign_up
 
 import androidx.lifecycle.ViewModel
-import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
@@ -13,14 +12,13 @@ import javax.inject.Inject
  * ViewModel для экрана регистрации. Обрабатывает логику обновления имени и фамилии пользователя,
  * а также валидацию введенных данных.
  */
-@HiltViewModel
-internal class SignUpActivityViewModel @Inject constructor(private val profileManager: ProfileManager) :
+class SignUpActivityViewModel @Inject constructor(private val profileManager: ProfileManager) :
     ViewModel() {
     private val _firstnameFlow = MutableStateFlow("")
     private val _lastNameFlow = MutableStateFlow("")
     val firstnameFlow = _firstnameFlow.asStateFlow()
     val lastNameFlow = _lastNameFlow.asStateFlow()
-    val stateFlow = combine(firstnameFlow, lastNameFlow) { firstname, lastname ->
+  internal  val stateFlow = combine(firstnameFlow, lastNameFlow) { firstname, lastname ->
         SignUpActivityState(firstName = firstname, lastName = lastname)
     }
     val lengthLimit = 24
@@ -47,5 +45,11 @@ internal class SignUpActivityViewModel @Inject constructor(private val profileMa
      */
     suspend fun updateLastName(lastName: String) {
         _lastNameFlow.emit(lastName)
+    }
+
+    class Factory @Inject constructor(
+        private val profileManager: ProfileManager
+    ) {
+        fun create() = SignUpActivityViewModel(profileManager)
     }
 }

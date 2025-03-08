@@ -1,7 +1,6 @@
 package ru.surf.learn2invest.presentation.ui.components.alert_dialogs.refill_account_dialog
 
 import androidx.lifecycle.ViewModel
-import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -13,8 +12,7 @@ import javax.inject.Inject
  *
  * @property profileManager Менеджер профиля, используемый для обновления данных пользователя.
  */
-@HiltViewModel
-internal class RefillAccountDialogViewModel @Inject constructor(
+class RefillAccountDialogViewModel @Inject constructor(
     private val profileManager: ProfileManager,
 ) : ViewModel() {
 
@@ -64,5 +62,10 @@ internal class RefillAccountDialogViewModel @Inject constructor(
         } else {
             false
         }
+    }
+    class Factory @Inject constructor(
+        private val profileManager: ProfileManager
+    ) {
+        fun create() = RefillAccountDialogViewModel(profileManager)
     }
 }

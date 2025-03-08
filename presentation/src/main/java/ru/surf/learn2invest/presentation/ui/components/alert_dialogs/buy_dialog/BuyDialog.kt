@@ -11,12 +11,12 @@ import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
 import androidx.lifecycle.lifecycleScope
 import com.google.android.material.bottomsheet.BottomSheetDialog
-import dagger.hilt.android.AndroidEntryPoint
 import ru.surf.learn2invest.domain.utils.launchIO
 import ru.surf.learn2invest.domain.utils.launchMAIN
 import ru.surf.learn2invest.domain.utils.withContextMAIN
 import ru.surf.learn2invest.presentation.R
 import ru.surf.learn2invest.presentation.databinding.DialogBuyBinding
+import ru.surf.learn2invest.presentation.di.PresentationComponent
 import ru.surf.learn2invest.presentation.ui.components.alert_dialogs.parent.CustomBottomSheetDialog
 import ru.surf.learn2invest.presentation.utils.NoArgException
 import ru.surf.learn2invest.presentation.utils.getFloatFromStringWithCurrency
@@ -32,8 +32,7 @@ import javax.inject.Inject
  * взаимодействовать с кнопками увеличения/уменьшения лотов, вводить торговый пароль,
  * а также выполнять покупку актива при наличии достаточного баланса.
  */
-@AndroidEntryPoint
-internal class BuyDialog : CustomBottomSheetDialog() {
+class BuyDialog : CustomBottomSheetDialog() {
     private lateinit var binding: DialogBuyBinding
     override val dialogTag: String = "buy"
 
@@ -181,6 +180,7 @@ internal class BuyDialog : CustomBottomSheetDialog() {
                     imageButtonPlus.isVisible = lotsData.lots < maxQuantity
                     imageButtonMinus.isVisible = lotsData.lots > 0
                     priceNumber.text = state.coin.coinPrice.getWithCurrency()
+                    if (lotsData.isUpdateTVNeeded) enteringNumberOfLots.setText("${lotsData.lots}")
                 }
             }
         }
@@ -210,6 +210,7 @@ internal class BuyDialog : CustomBottomSheetDialog() {
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
+        (context.applicationContext as PresentationComponent).inject(this)
         lifecycleScope.launchIO {
             viewModel.setAssetIfInDB()
         }.invokeOnCompletion {
